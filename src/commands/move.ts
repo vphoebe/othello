@@ -39,7 +39,9 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
-  const input = interaction.options.getString("coordinates") as string; // required
+  const input = interaction.options
+    .getString("coordinates")
+    ?.toLocaleUpperCase() as string; // required
   const coords = gridToCoords(input);
   if (!coords) {
     await interaction.reply({ ephemeral: true, content: "Invalid move." });
@@ -50,12 +52,15 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     await interaction.reply({ ephemeral: true, content: "Invalid move." });
     return;
   } else {
-    await activeGame.interaction?.editReply({
-      embeds: [activeGame.game.getEmbed()],
-    });
+    const winner = activeGame.game.getWinner();
     await interaction.reply({
       ephemeral: true,
-      content: `You placed a piece on ${input}.`,
+      content: `${interaction.user.displayName} placed a ${
+        activeGame.game.theme[playerPiece]
+      } piece on ${input}. ${
+        winner ? `\n${winner.displayName} is the winner!` : ""
+      }`,
+      embeds: [activeGame.game.getEmbed()],
     });
     return;
   }

@@ -31,12 +31,9 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   }
   activeGame.game.pass();
 
-  await activeGame.interaction?.editReply({
-    embeds: [activeGame.game.getEmbed()],
-  });
   await interaction.reply({
-    ephemeral: true,
-    content: `You passed your turn.`,
+    content: `${interaction.user.displayName} passed their turn.`,
+    embeds: [activeGame.game.getEmbed()],
   });
   return;
 };

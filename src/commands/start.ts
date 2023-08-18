@@ -25,8 +25,6 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     embeds: [activeGame.game.getEmbed()],
     ephemeral: true,
   });
-
-  activeGame.interaction = interaction;
 };
 
 const definition: CommandDefinition = {

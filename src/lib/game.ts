@@ -1,14 +1,12 @@
 import { Board, Piece, PlayerPiece, opposite } from "./board.js";
 import { compass } from "./coordinates.js";
 import { Theme, themes } from "./themes.js";
-import { ChatInputCommandInteraction, EmbedBuilder, User } from "discord.js";
+import { EmbedBuilder, User } from "discord.js";
 
 export const activeGame: {
   game: Game | null;
-  interaction: ChatInputCommandInteraction | null;
 } = {
   game: null,
-  interaction: null,
 };
 
 export class Game {
