@@ -23,7 +23,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   await interaction.reply({
     embeds: [activeGame.game.getEmbed()],
-    ephemeral: true,
+    ephemeral: false,
   });
 };
 

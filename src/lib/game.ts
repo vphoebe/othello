@@ -41,7 +41,7 @@ export class Game {
     return totalMoves === 0;
   }
 
-  getWinner(): User | undefined {
+  getWinner(): { user: User; piece: PlayerPiece } | undefined {
     if (!this.isFinished()) return undefined;
     let blackCount = 0;
     let whiteCount = 0;
@@ -50,9 +50,9 @@ export class Game {
       if (piece === Piece.White) whiteCount++;
     });
     if (blackCount > whiteCount) {
-      return this.players[Piece.Black];
+      return { user: this.players[Piece.Black], piece: Piece.Black };
     } else if (whiteCount > blackCount) {
-      return this.players[Piece.White];
+      return { user: this.players[Piece.White], piece: Piece.White };
     }
   }
 
@@ -83,12 +83,14 @@ export class Game {
       if (piece !== Piece.Empty) return;
       // this coord is empty
       // try every compass offset to see if there are any flanked
+      let doesFlank = false;
       for (const offset of offsets) {
         const flankedCoords = this.board.flanked(x, y, playerPiece, offset);
         if (flankedCoords.length) {
-          moves++;
+          doesFlank = true;
         }
       }
+      if (doesFlank) moves++;
     });
     return moves;
   }
@@ -124,28 +126,17 @@ export class Game {
     return wasValid;
   }
 
-  getEmbed(): EmbedBuilder {
-    const winner = this.getWinner();
-
-    const activePlayerString = `${this.theme[this.activePlayer]} ${
-      this.players[this.activePlayer].displayName
-    }`;
-
-    const winnerString = `${this.theme[this.activePlayer]} ${
-      winner?.displayName
-    } has won the match!`;
+  getEmbed(winnerPiece?: PlayerPiece): EmbedBuilder {
+    const playerString = (playerPiece: PlayerPiece) =>
+      `${this.theme[playerPiece]} ${this.players[playerPiece].displayName} ${
+        !winnerPiece && playerPiece === this.activePlayer ? "(their turn)" : ""
+      } ${winnerPiece && winnerPiece === playerPiece ? "[WINNER!]" : ""}`;
 
     const gameScreen = new EmbedBuilder()
       .setTitle("Othello")
       .addFields({
         name: "Players",
-        value: `${this.theme[Piece.Black]} ${
-          this.players[Piece.Black].displayName
-        }\n${this.theme[Piece.White]} ${this.players[Piece.White].displayName}`,
-      })
-      .addFields({
-        name: `${winner ? "Winner" : "Active"}`,
-        value: winner ? winnerString : activePlayerString,
+        value: playerString(Piece.Black) + "\n" + playerString(Piece.White),
       })
       .addFields({
         name: "Game Board",

@@ -54,13 +54,13 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   } else {
     const winner = activeGame.game.getWinner();
     await interaction.reply({
-      ephemeral: true,
+      ephemeral: false,
       content: `${interaction.user.displayName} placed a ${
         activeGame.game.theme[playerPiece]
       } piece on ${input}. ${
-        winner ? `\n${winner.displayName} is the winner!` : ""
+        winner ? `\n${winner.user.displayName} is the winner!` : ""
       }`,
-      embeds: [activeGame.game.getEmbed()],
+      embeds: [activeGame.game.getEmbed(winner?.piece)],
     });
     return;
   }
