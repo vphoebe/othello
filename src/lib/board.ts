@@ -107,13 +107,13 @@ export class Board {
     const rowAlignedBoard = this.data[0].map((_val, y) =>
       this.data.map((row) => row[y])
     );
-    const colHeading = `.  a⬛️b⬛️c⬛️d⬛️e⬛️f⬛️g⬛️h\n`;
+    // eslint-disable-next-line no-irregular-whitespace
+    const colHeading = `  a⬛️b⬛️c⬛️d⬛️e⬛️f⬛️g⬛️h\n`;
     const boardString =
       colHeading +
       rowAlignedBoard
         .map(
-          (row, idx) =>
-            `${idx + 1}  ${row.map((char) => theme[char]).join(" ")}`
+          (row, idx) => `${idx + 1} ${row.map((char) => theme[char]).join(" ")}`
         )
         .join("\n");
 
