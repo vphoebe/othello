@@ -1,7 +1,7 @@
 import { Board, Piece, PlayerPiece, opposite } from "./board.js";
 import { compass } from "./coordinates.js";
 import { Theme, themes } from "./themes.js";
-import { EmbedBuilder, User } from "discord.js";
+import { EmbedBuilder, User, userMention } from "discord.js";
 
 export const activeGame: {
   game: Game | null;
@@ -128,9 +128,11 @@ export class Game {
 
   getEmbed(winnerPiece?: PlayerPiece): EmbedBuilder {
     const playerString = (playerPiece: PlayerPiece) =>
-      `${this.theme[playerPiece]} ${this.players[playerPiece].displayName} ${
-        !winnerPiece && playerPiece === this.activePlayer ? "(their turn)" : ""
-      } ${winnerPiece && winnerPiece === playerPiece ? "[WINNER!]" : ""}`;
+      `\`${this.theme[playerPiece]}\` ${userMention(
+        this.players[playerPiece].id
+      )} ${!winnerPiece && playerPiece === this.activePlayer ? "(next)" : ""} ${
+        winnerPiece && winnerPiece === playerPiece ? "[WINNER!]" : ""
+      }`;
 
     const gameScreen = new EmbedBuilder()
       .setTitle("Othello")
