@@ -107,7 +107,7 @@ export class Board {
     const rowAlignedBoard = this.data[0].map((_val, y) =>
       this.data.map((row) => row[y])
     );
-    const colHeading = `.   A  B  C  D  E  F  G  H\n`;
+    const colHeading = `.  a⬛️b⬛️c⬛️d⬛️e⬛️f⬛️g⬛️h\n`;
     const boardString =
       colHeading +
       rowAlignedBoard
