@@ -1,7 +1,7 @@
 {
   "name": "othello",
   "version": "1.0.0",
-  "description": "game",
+  "description": "othello clone for discord bot",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
