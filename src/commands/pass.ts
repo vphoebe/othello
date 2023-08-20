@@ -1,4 +1,4 @@
-import { activeGame } from "../lib/game.js";
+import { state } from "../lib/state.js";
 import { CommandDefinition } from "../types.js";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
@@ -7,14 +7,18 @@ const data = new SlashCommandBuilder()
   .setDescription("Pass your turn to the other player.");
 
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  if (!activeGame.game) {
+  const game = interaction.guildId
+    ? state.get(interaction.guildId, interaction.user)
+    : undefined;
+
+  if (!game) {
     await interaction.reply({
       ephemeral: true,
       content: "Use /start to start a new game!",
     });
     return;
   }
-  const playerPiece = activeGame.game.getPlayer(interaction.user);
+  const playerPiece = game.getPlayer(interaction.user);
   if (!playerPiece) {
     await interaction.reply({
       ephemeral: true,
@@ -22,18 +26,18 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     });
     return;
   }
-  if (playerPiece !== activeGame.game.activePlayer) {
+  if (playerPiece !== game.activePlayer) {
     await interaction.reply({
       ephemeral: true,
       content: "It's not your turn yet! Please hang on.",
     });
     return;
   }
-  activeGame.game.pass();
+  game.pass();
 
   await interaction.reply({
     content: `${interaction.user.displayName} passed their turn.`,
-    embeds: [activeGame.game.getEmbed()],
+    embeds: [game.getEmbed()],
   });
   return;
 };

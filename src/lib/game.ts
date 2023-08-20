@@ -3,12 +3,6 @@ import { compass } from "./coordinates.js";
 import { Theme, themes } from "./themes.js";
 import { EmbedBuilder, User, userMention } from "discord.js";
 
-export const activeGame: {
-  game: Game | null;
-} = {
-  game: null,
-};
-
 export class Game {
   board: Board;
   players: {
@@ -37,7 +31,6 @@ export class Game {
     const totalMoves =
       this.findValidMoveCount(Piece.Black) +
       this.findValidMoveCount(Piece.White);
-    console.log(`Total moves available: ${totalMoves}`);
     return totalMoves === 0;
   }
 
@@ -110,12 +103,10 @@ export class Game {
       if (flankedCoords.length) {
         // valid move found
         wasValid = true;
-        console.log(`Valid move for ${x}, ${y} in ${def.dir} direction`);
         // place player's piece
         this.board.set(x, y, playerPiece);
         // flip flanked
         for (const coords of flankedCoords) {
-          console.log(`Flipping ${coords.x} ${coords.y}`);
           this.board.flip(coords.x, coords.y);
         }
       }

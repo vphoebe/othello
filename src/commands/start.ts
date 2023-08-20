@@ -1,4 +1,5 @@
-import { Game, activeGame } from "../lib/game.js";
+import { Game } from "../lib/game.js";
+import { state } from "../lib/state.js";
 import { CommandDefinition } from "../types.js";
 import {
   ChatInputCommandInteraction,
@@ -19,10 +20,18 @@ const data = new SlashCommandBuilder()
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const black = interaction.options.getUser("black") as User;
   const white = interaction.options.getUser("white") as User;
-  activeGame.game = new Game(black, white);
+  if (!interaction.guildId) {
+    await interaction.reply({
+      ephemeral: true,
+      content: "Use this command in a server to start a game.",
+    });
+    return;
+  }
+  const newGame = new Game(black, white);
+  state.set(interaction.guildId, newGame);
 
   await interaction.reply({
-    embeds: [activeGame.game.getEmbed()],
+    embeds: [newGame.getEmbed()],
     ephemeral: true,
   });
 };

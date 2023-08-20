@@ -1,5 +1,5 @@
 import { gridToCoords } from "../lib/coordinates.js";
-import { activeGame } from "../lib/game.js";
+import { state } from "../lib/state.js";
 import { CommandDefinition } from "../types.js";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
@@ -16,14 +16,18 @@ const data = new SlashCommandBuilder()
   );
 
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  if (!activeGame.game) {
+  const game = interaction.guildId
+    ? state.get(interaction.guildId, interaction.user)
+    : undefined;
+
+  if (!game) {
     await interaction.reply({
       ephemeral: true,
       content: "Use /start to start a new game!",
     });
     return;
   }
-  const playerPiece = activeGame.game.getPlayer(interaction.user);
+  const playerPiece = game.getPlayer(interaction.user);
   if (!playerPiece) {
     await interaction.reply({
       ephemeral: true,
@@ -31,7 +35,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     });
     return;
   }
-  if (playerPiece !== activeGame.game.activePlayer) {
+  if (playerPiece !== game.activePlayer) {
     await interaction.reply({
       ephemeral: true,
       content: "It's not your turn yet! Please hang on.",
@@ -47,20 +51,20 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     await interaction.reply({ ephemeral: true, content: "Invalid move." });
     return;
   }
-  const validMove = activeGame.game.move(coords.x, coords.y, playerPiece);
+  const validMove = game.move(coords.x, coords.y, playerPiece);
   if (!validMove) {
     await interaction.reply({ ephemeral: true, content: "Invalid move." });
     return;
   } else {
-    const winner = activeGame.game.getWinner();
+    const winner = game.getWinner();
     await interaction.reply({
       ephemeral: false,
       content: `${interaction.user.displayName} placed a ${
-        activeGame.game.theme[playerPiece]
+        game.theme[playerPiece]
       } piece on ${input}. ${
         winner ? `\n${winner.user.displayName} is the winner!` : ""
       }`,
-      embeds: [activeGame.game.getEmbed(winner?.piece)],
+      embeds: [game.getEmbed(winner?.piece)],
     });
     return;
   }
