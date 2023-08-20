@@ -126,7 +126,6 @@ export class Game {
       }`;
 
     const gameScreen = new EmbedBuilder()
-      .setTitle("Othello")
       .addFields({
         name: "Players",
         value: playerString(Piece.Black) + "\n" + playerString(Piece.White),

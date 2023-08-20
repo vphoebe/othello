@@ -32,7 +32,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   await interaction.reply({
     embeds: [newGame.getEmbed()],
-    ephemeral: true,
+    ephemeral: false,
   });
 };
 
