@@ -20,13 +20,13 @@ const rest = new REST().setToken(process.env.TOKEN ?? "");
     await rest.put(
       Routes.applicationGuildCommands(
         process.env.CLIENT_ID ?? "",
-        process.env.TESTING_GUILD_ID ?? ""
+        process.env.GUILD_ID ?? ""
       ),
       { body: commands }
     );
 
     console.log(
-      `Deployed application commands to guild: ${process.env.TESTING_GUILD_ID}`
+      `Deployed application commands to guild: ${process.env.GUILD_ID}`
     );
   } catch (error) {
     // And of course, make sure you catch and log any errors!
