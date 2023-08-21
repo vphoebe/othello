@@ -1,15 +1,17 @@
 import { Board, Piece, PlayerPiece, opposite } from "./board.js";
-import { compass } from "./coordinates.js";
+import { MoveDefinition, compass } from "./coordinates.js";
 import { Theme, themes } from "./themes.js";
 import { EmbedBuilder, User, userMention } from "discord.js";
 
+interface Player {
+  user: User;
+  moves: MoveDefinition[];
+}
+
 export class Game {
   board: Board;
-  players: {
-    [Piece.Black]: User;
-    [Piece.White]: User;
-  };
-  activePlayer: Piece.Black | Piece.White;
+  players: Record<PlayerPiece, Player>;
+  activePlayer: PlayerPiece;
   theme: Theme;
 
   constructor(player1: User, player2: User) {
@@ -19,11 +21,11 @@ export class Game {
     this.board.set(4, 4, Piece.White); // E5
     this.board.set(4, 3, Piece.Black); // E4
     this.board.set(3, 4, Piece.Black); // D5
-    this.activePlayer = Piece.Black;
     this.players = {
-      [Piece.Black]: player1,
-      [Piece.White]: player2,
+      [Piece.Black]: { user: player1, moves: [] },
+      [Piece.White]: { user: player2, moves: [] },
     };
+    this.activePlayer = Piece.Black;
     this.theme = themes.default;
   }
 
@@ -43,22 +45,23 @@ export class Game {
       if (piece === Piece.White) whiteCount++;
     });
     if (blackCount > whiteCount) {
-      return { user: this.players[Piece.Black], piece: Piece.Black };
+      return { user: this.players[Piece.Black].user, piece: Piece.Black };
     } else if (whiteCount > blackCount) {
-      return { user: this.players[Piece.White], piece: Piece.White };
+      return { user: this.players[Piece.White].user, piece: Piece.White };
     }
   }
 
-  getPlayer(user: User) {
+  getPlayer(user: User): PlayerPiece | null {
     // return the piece user is, or null if invalid
     // debug: if user is both, return current turn
-    if (
-      user === this.players[Piece.Black] &&
-      user === this.players[Piece.White]
-    )
-      return this.activePlayer;
-    if (user === this.players[Piece.Black]) return Piece.Black;
-    if (user === this.players[Piece.White]) return Piece.White;
+    const entries = Object.entries(this.players).filter(
+      ([, player]) => player.user === user
+    );
+    if (entries.length > 1) return this.activePlayer;
+    else if (entries.length === 1) {
+      const record = entries[0];
+      return parseInt(record[0]) as PlayerPiece;
+    }
     return null;
   }
 
@@ -120,7 +123,7 @@ export class Game {
   getEmbed(winnerPiece?: PlayerPiece): EmbedBuilder {
     const playerString = (playerPiece: PlayerPiece) =>
       `\`${this.theme[playerPiece]}\` ${userMention(
-        this.players[playerPiece].id
+        this.players[playerPiece].user.id
       )} ${!winnerPiece && playerPiece === this.activePlayer ? "(next)" : ""} ${
         winnerPiece && winnerPiece === playerPiece ? "[WINNER!]" : ""
       }`;
