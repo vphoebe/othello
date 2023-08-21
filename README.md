@@ -1,5 +1,7 @@
 # Othello: an Othello clone Discord bot
 
+<img width="352" alt="Text-based Othello game board" src="https://github.com/vphoebe/othello/assets/18145828/e7cbf403-813b-4ef0-ab74-a1b3789a3219">
+
 ## Features
 
 - Fully text-based two-player Othello gameplay, using Discord message embeds in any channel
