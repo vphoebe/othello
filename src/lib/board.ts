@@ -2,44 +2,44 @@ import { Coords } from "./coordinates.js";
 import { Theme } from "./themes.js";
 import { codeBlock } from "discord.js";
 
-export enum Piece {
-  Black = 1,
-  White = 2,
+export enum Square {
+  Dark = 1,
+  Light = 2,
   Empty = 0,
 }
 
-export type PlayerPiece = Piece.Black | Piece.White;
+export type Piece = Square.Dark | Square.Light;
 
-export function opposite(piece: PlayerPiece) {
-  if (piece === Piece.Black) return Piece.White;
-  return Piece.Black;
+export function opposite(piece: Piece) {
+  if (piece === Square.Dark) return Square.Light;
+  return Square.Dark;
 }
 
 export class Board {
-  data: Piece[][];
+  data: Square[][];
 
   constructor() {
     // 2D array, idx 0-7 on both axes
-    const board: Piece[][] = new Array(8)
+    const board: Square[][] = new Array(8)
       .fill(null)
-      .map(() => new Array(8).fill(Piece.Empty));
+      .map(() => new Array(8).fill(Square.Empty));
 
     this.data = board;
   }
 
-  get(x: number, y: number): Piece | null {
+  get(x: number, y: number): Square | null {
     const column = this.data[x];
     if (column) {
       const piece = column[y];
-      if (piece in Piece) {
+      if (piece in Square) {
         return piece;
       }
     }
     return null;
   }
 
-  set(x: number, y: number, piece: Piece) {
-    this.data[x][y] = piece;
+  set(x: number, y: number, square: Square) {
+    this.data[x][y] = square;
   }
 
   flip(x: number, y: number): boolean {
@@ -54,22 +54,17 @@ export class Board {
     return true;
   }
 
-  loop(callbackfn: (x: number, y: number, piece: Piece) => void) {
+  loop(callbackfn: (x: number, y: number, square: Square) => void) {
     // loop through 2D array by coordinates and piece value
     const board = this.data;
     for (const [x, col] of board.entries()) {
-      for (const [y, piece] of col.entries()) {
-        callbackfn(x, y, piece);
+      for (const [y, square] of col.entries()) {
+        callbackfn(x, y, square);
       }
     }
   }
 
-  flanked(
-    x: number,
-    y: number,
-    playerPiece: PlayerPiece,
-    offset: Coords
-  ): Coords[] {
+  flanked(x: number, y: number, playerPiece: Piece, offset: Coords): Coords[] {
     // for a given playerPiece and offset direction
     // return the opponent's pieces that are "flanked", if any
     // requires a piece of player's type to be endpoint in the direction
@@ -82,13 +77,13 @@ export class Board {
     if (initialTarget === opposite(playerPiece)) {
       continueFlag = true;
       while (continueFlag) {
-        const targetPiece = this.get(targetCoords.x, targetCoords.y);
+        const targetSquare = this.get(targetCoords.x, targetCoords.y);
         // in bounds pieces, or until we hit the player's piece type
-        if (targetPiece !== null && targetPiece === playerPiece) {
+        if (targetSquare !== null && targetSquare === playerPiece) {
           endcap = true;
           continueFlag = false;
         }
-        if (targetPiece !== null && targetPiece === opposite(playerPiece)) {
+        if (targetSquare !== null && targetSquare === opposite(playerPiece)) {
           traversed.push({ x: targetCoords.x, y: targetCoords.y });
           // then increment by the offset and go again
           targetCoords.x = targetCoords.x + i;
@@ -113,7 +108,7 @@ export class Board {
       rowAlignedBoard
         .map(
           (row, idx) =>
-            `${idx + 1} ${row.map((char) => theme.pieces[char]).join(" ")}`
+            `${idx + 1} ${row.map((char) => theme.squares[char]).join(" ")}`
         )
         .join("\n");
 

@@ -18,7 +18,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     });
     return;
   }
-  const playerPiece = game.getPlayer(interaction.user);
+  const playerPiece = game.getPlayerPiece(interaction.user);
   if (!playerPiece) {
     await interaction.reply({
       ephemeral: true,

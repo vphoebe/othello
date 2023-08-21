@@ -1,4 +1,4 @@
-import { Piece } from "./board.js";
+import { Square } from "./board.js";
 
 export interface Coords {
   x: number; // letter/column
@@ -11,7 +11,7 @@ export interface MoveDefinition extends Coords {
 }
 
 export interface AdjCoords extends Coords {
-  val: Piece;
+  val: Square;
   offset: Coords;
 }
 

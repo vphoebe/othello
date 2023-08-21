@@ -9,7 +9,7 @@ class StateManager {
 
   get(guildId: string, user: User) {
     const guildGames = this.guilds.get(guildId);
-    return guildGames?.find((game) => game.getPlayer(user) !== null);
+    return guildGames?.find((game) => game.getPlayerPiece(user) !== null);
   }
 
   set(guildId: string, value: Game) {
@@ -21,7 +21,7 @@ class StateManager {
     const guildGames = this.guilds.get(guildId);
     if (guildGames) {
       const game = guildGames?.findIndex(
-        (game) => game.getPlayer(user) !== null
+        (game) => game.getPlayerPiece(user) !== null
       );
       if (game !== -1) {
         const withRemoved = [...guildGames];

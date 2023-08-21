@@ -27,7 +27,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     });
     return;
   }
-  const playerPiece = game.getPlayer(interaction.user);
+  const playerPiece = game.getPlayerPiece(interaction.user);
   if (!playerPiece) {
     await interaction.reply({
       ephemeral: true,
@@ -71,7 +71,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   await interaction.reply({
     ephemeral: false,
-    content: `${interaction.user.displayName} placed a ${game.theme.pieces[playerPiece]} piece on ${input}. ${winnerText}`,
+    content: `${interaction.user.displayName} placed a ${game.theme.squares[playerPiece]} piece on ${input}. ${winnerText}`,
     embeds: [game.getEmbed(winner?.piece)],
   });
   if (winner) {
