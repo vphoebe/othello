@@ -22,18 +22,18 @@ export class Game {
     this.board.set(4, 3, Piece.Black); // E4
     this.board.set(3, 4, Piece.Black); // D5
     this.players = {
-      [Piece.Black]: { user: player1, moves: [] },
-      [Piece.White]: { user: player2, moves: [] },
+      [Piece.Black]: { user: player1, moves: this.getValidMoves(Piece.Black) },
+      [Piece.White]: { user: player2, moves: this.getValidMoves(Piece.White) },
     };
     this.activePlayer = Piece.Black;
     this.theme = themes.default;
   }
 
   isFinished() {
-    const totalMoves =
-      this.findValidMoveCount(Piece.Black) +
-      this.findValidMoveCount(Piece.White);
-    return totalMoves === 0;
+    const allMoves = Object.entries(this.players)
+      .map(([, player]) => player.moves)
+      .flat();
+    return allMoves.length === 0;
   }
 
   getWinner(): { user: User; piece: PlayerPiece } | undefined {
@@ -70,8 +70,8 @@ export class Game {
     this.activePlayer = opposite(this.activePlayer);
   }
 
-  findValidMoveCount(playerPiece: PlayerPiece): number {
-    let moves = 0;
+  getValidMoves(playerPiece: PlayerPiece): MoveDefinition[] {
+    const moves: MoveDefinition[] = [];
     // we loop through every space on the board to determine if it's valid
     // it must be adjacent to an opponent and created "flanked" pieces with that offset
     const offsets = compass.map((def) => def.offset);
@@ -79,14 +79,12 @@ export class Game {
       if (piece !== Piece.Empty) return;
       // this coord is empty
       // try every compass offset to see if there are any flanked
-      let doesFlank = false;
       for (const offset of offsets) {
         const flankedCoords = this.board.flanked(x, y, playerPiece, offset);
         if (flankedCoords.length) {
-          doesFlank = true;
+          moves.push({ x, y, offset, flanked: flankedCoords });
         }
       }
-      if (doesFlank) moves++;
     });
     return moves;
   }
@@ -95,29 +93,24 @@ export class Game {
   // returns `true` if valid move, returns `false` if invalid
 
   move(x: number, y: number, playerPiece: PlayerPiece): boolean {
-    // game-logic evaluated version of "set()"
-    // player-initiated moves should always use this
-    const target = this.board.get(x, y);
-    if (target === null || target !== Piece.Empty) return false;
+    const playerMoves = this.players[playerPiece].moves;
+    const validMoves = playerMoves.filter(
+      (move) => move.x === x && move.y === y
+    );
+    if (!validMoves.length) return false;
 
-    let wasValid = false;
-    for (const def of compass) {
-      const flankedCoords = this.board.flanked(x, y, playerPiece, def.offset);
-      if (flankedCoords.length) {
-        // valid move found
-        wasValid = true;
-        // place player's piece
-        this.board.set(x, y, playerPiece);
-        // flip flanked
-        for (const coords of flankedCoords) {
-          this.board.flip(coords.x, coords.y);
-        }
-      }
-    }
-    if (wasValid) {
-      this.pass();
-    }
-    return wasValid;
+    // valid move(s)
+    this.board.set(x, y, playerPiece);
+    validMoves.forEach((move) => {
+      move.flanked.forEach((coords) => this.board.flip(coords.x, coords.y));
+    });
+    this.pass();
+    // re-evaluate next possible moves
+    this.players[playerPiece].moves = this.getValidMoves(playerPiece);
+    this.players[opposite(playerPiece)].moves = this.getValidMoves(
+      opposite(playerPiece)
+    );
+    return true;
   }
 
   getEmbed(winnerPiece?: PlayerPiece): EmbedBuilder {
