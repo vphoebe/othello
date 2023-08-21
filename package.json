@@ -5,9 +5,10 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/index.ts --outdir=build --platform=node --target=node18 --bundle --packages=external --out-extension:.js=.cjs --minify",
+    "build": "esbuild src/index.ts src/deploy.ts --outdir=build --platform=node --target=node18 --bundle --packages=external --out-extension:.js=.cjs --minify",
+    "build:docker": "pnpm build && docker build -t othello-dev .",
     "dev": "nodemon src/index.ts",
-    "deploy": "nodemon src/deploy.ts",
+    "dev:deploy": "nodemon src/deploy.ts",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },
