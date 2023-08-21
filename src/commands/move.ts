@@ -20,7 +20,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     ? state.get(interaction.guildId, interaction.user)
     : undefined;
 
-  if (!game) {
+  if (!game || !interaction.guildId) {
     await interaction.reply({
       ephemeral: true,
       content: "Use /start to start a new game!",
@@ -66,6 +66,9 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
       }`,
       embeds: [game.getEmbed(winner?.piece)],
     });
+    if (winner) {
+      state.delete(interaction.guildId, interaction.user);
+    }
     return;
   }
 };

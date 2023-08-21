@@ -27,10 +27,17 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     });
     return;
   }
+  let content = "";
+  const existingGame = state.get(interaction.guildId, interaction.user);
+  if (existingGame) {
+    state.delete(interaction.guildId, interaction.user);
+    content = `${interaction.user.displayName}'s previous game was deleted.`;
+  }
   const newGame = new Game(black, white);
   state.set(interaction.guildId, newGame);
 
   await interaction.reply({
+    content,
     embeds: [newGame.getEmbed()],
     ephemeral: false,
   });

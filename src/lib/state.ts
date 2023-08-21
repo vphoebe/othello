@@ -16,6 +16,21 @@ class StateManager {
     const guildGames = this.guilds.get(guildId);
     this.guilds.set(guildId, [...(guildGames ?? []), value]);
   }
+
+  delete(guildId: string, user: User) {
+    const guildGames = this.guilds.get(guildId);
+    if (guildGames) {
+      const game = guildGames?.findIndex(
+        (game) => game.getPlayer(user) !== null
+      );
+      if (game !== -1) {
+        const withRemoved = [...guildGames];
+        withRemoved.splice(game, 1);
+        this.guilds.set(guildId, withRemoved);
+        console.log(`Game for ${guildId} / ${user.displayName} was deleted.`);
+      }
+    }
+  }
 }
 
 export const state = new StateManager();
