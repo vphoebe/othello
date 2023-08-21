@@ -56,14 +56,21 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     await interaction.reply({ ephemeral: true, content: "Invalid move." });
     return;
   } else {
-    const winner = game.getWinner();
+    let winner;
+    const isFinished = game.isFinished();
+    if (isFinished) winner = game.getWinner();
+
+    let winnerText = "";
+
+    if (winner) {
+      winnerText = `${winner.user.displayName} is the winner!`;
+    } else if (isFinished && !winner) {
+      winnerText = "It's a tie!";
+    }
+
     await interaction.reply({
       ephemeral: false,
-      content: `${interaction.user.displayName} placed a ${
-        game.theme[playerPiece]
-      } piece on ${input}. ${
-        winner ? `\n${winner.user.displayName} is the winner!` : ""
-      }`,
+      content: `${interaction.user.displayName} placed a ${game.theme[playerPiece]} piece on ${input}. ${winnerText}`,
       embeds: [game.getEmbed(winner?.piece)],
     });
     if (winner) {

@@ -37,7 +37,6 @@ export class Game {
   }
 
   getWinner(): { user: User; piece: PlayerPiece } | undefined {
-    if (!this.isFinished()) return undefined;
     let blackCount = 0;
     let whiteCount = 0;
     this.board.loop((_x, _y, piece) => {
@@ -48,6 +47,8 @@ export class Game {
       return { user: this.players[Piece.Black].user, piece: Piece.Black };
     } else if (whiteCount > blackCount) {
       return { user: this.players[Piece.White].user, piece: Piece.White };
+    } else {
+      return undefined;
     }
   }
 
@@ -118,7 +119,7 @@ export class Game {
       `\`${this.theme[playerPiece]}\` ${userMention(
         this.players[playerPiece].user.id
       )} ${!winnerPiece && playerPiece === this.activePlayer ? "(next)" : ""} ${
-        winnerPiece && winnerPiece === playerPiece ? "[WINNER!]" : ""
+        winnerPiece && winnerPiece === playerPiece ? "(Winner!)" : ""
       }`;
 
     const gameScreen = new EmbedBuilder()
