@@ -90,10 +90,8 @@ export class Game {
     return moves;
   }
 
-  // game logic methods
-  // returns `true` if valid move, returns `false` if invalid
-
   move(x: number, y: number, playerPiece: PlayerPiece): boolean {
+    // returns `true` if valid move, returns `false` if invalid
     const playerMoves = this.players[playerPiece].moves;
     const validMoves = playerMoves.filter(
       (move) => move.x === x && move.y === y
@@ -115,22 +113,30 @@ export class Game {
   }
 
   getEmbed(winnerPiece?: PlayerPiece): EmbedBuilder {
-    const playerString = (playerPiece: PlayerPiece) =>
-      `\`${this.theme[playerPiece]}\` ${userMention(
+    const playerString = (playerPiece: PlayerPiece) => {
+      const badge = () => {
+        if (winnerPiece) {
+          if (winnerPiece === playerPiece) return "(Winner!)";
+        } else {
+          if (playerPiece === this.activePlayer) return "(next)";
+        }
+        return "";
+      };
+      return `\`${this.theme.pieces[playerPiece]}\` ${userMention(
         this.players[playerPiece].user.id
-      )} ${!winnerPiece && playerPiece === this.activePlayer ? "(next)" : ""} ${
-        winnerPiece && winnerPiece === playerPiece ? "(Winner!)" : ""
-      }`;
+      )} ${badge()}`;
+    };
 
-    const gameScreen = new EmbedBuilder()
-      .addFields({
+    const gameScreen = new EmbedBuilder().addFields([
+      {
         name: "Players",
-        value: playerString(Piece.Black) + "\n" + playerString(Piece.White),
-      })
-      .addFields({
+        value: `${playerString(Piece.Black)}\n${playerString(Piece.White)}`,
+      },
+      {
         name: "Game Board",
         value: this.board.draw(this.theme),
-      });
+      },
+    ]);
     return gameScreen;
   }
 }

@@ -25,7 +25,6 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   await interaction.reply({
     ephemeral: true,
-
     embeds: [rulesEmbed],
   });
   return;

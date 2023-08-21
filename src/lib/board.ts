@@ -108,12 +108,12 @@ export class Board {
       this.data.map((row) => row[y])
     );
     // eslint-disable-next-line no-irregular-whitespace
-    const colHeading = `  a⬛️b⬛️c⬛️d⬛️e⬛️f⬛️g⬛️h\n`;
     const boardString =
-      colHeading +
+      theme.colHeading +
       rowAlignedBoard
         .map(
-          (row, idx) => `${idx + 1} ${row.map((char) => theme[char]).join(" ")}`
+          (row, idx) =>
+            `${idx + 1} ${row.map((char) => theme.pieces[char]).join(" ")}`
         )
         .join("\n");
 
